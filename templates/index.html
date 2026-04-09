@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Policy Assistant</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI"; }
+body {
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+}
+.container {
+    width:420px;
+    height:650px;
+    background:#1e293b;
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+}
+.header {
+    padding:15px;
+    text-align:center;
+    background:#020617;
+}
+.chat-box {
+    flex:1;
+    padding:10px;
+    overflow-y:auto;
+}
+.message {
+    padding:10px;
+    margin:5px;
+    border-radius:10px;
+    max-width:75%;
+}
+.user {
+    background:#3b82f6;
+    margin-left:auto;
+}
+.bot {
+    background:#334155;
+}
+.input-area {
+    display:flex;
+    padding:10px;
+    background:#020617;
+}
+input {
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+}
+button {
+    margin-left:10px;
+    padding:10px;
+    background:#22c55e;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header">🤖 AI Policy Assistant</div>
+
+    <div id="chat-box" class="chat-box"></div>
+
+    <div class="input-area">
+        <input id="input" placeholder="Ask in Hindi or English..." />
+        <button onclick="send()">Send</button>
+    </div>
+</div>
+
+<script>
+async function send() {
+    let input = document.getElementById("input");
+    let text = input.value.trim();
+    if(!text) return;
+
+    let chat = document.getElementById("chat-box");
+
+    chat.innerHTML += `<div class="message user">${text}</div>`;
+
+    let bot = document.createElement("div");
+    bot.className = "message bot";
+    bot.innerText = "Thinking...";
+    chat.appendChild(bot);
+
+    input.value = "";
+
+    let res = await fetch("/ask", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({query:text})
+    });
+
+    let data = await res.json();
+    bot.innerText = data.answer;
+
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
